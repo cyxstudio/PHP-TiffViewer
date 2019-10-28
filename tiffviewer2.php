@@ -1,17 +1,15 @@
 <html>
 <head>
-<script src="conditionize.jquery.js"></script>
-<script src="jquery-3.2.1.js"></script>
+
 <script src="tiff.js"></script>
-<script src='tesseract.js'></script>
+
 
 </head>
 <body onscroll="scroll()">
 
 <div style="display:inline-block;">
-<select id="filelist" size=5>
-
-</select>
+<select id="filelist" size=8></select>
+<select id="filelist2" size=8></select>
 </div>
 <div style="display:inline-block">
 <div style="display:block;">
@@ -34,20 +32,17 @@ Current Page :
 
 <button id="OriginalSize"> Original </button>
 <button id="FitSize"> Fit </button>
-<button id="OCR">OCR</button>
+
 </div>
 </div>
 
 
-<div id="imageCanvas">
+<div id="imageCanvas" style="border:solid 2px blue;">
 </div>
 
 
 <br>
-<br><br>
 
-<div id="bundleimage">
-</div>
 
 
 
@@ -58,9 +53,17 @@ Current Page :
 <script>
 
 var OCRArray = [];
+var tiff;
+
+var wname = window.name
+var pol = wname.split("|")[0]
+var clm = wname.split("|")[1]
+
+$("#policy").val(pol);
+$("#clm").val(clm);
 
 <?php
-$dir = "C:/Users/cyxstudio/Downloads/laragon/www/tiffviewer";
+$dir = "C:\Users\hssoyr9\Downloads\laragon-2.2\www\Tiffs";
 $a = scandir($dir);
 ?>
 
@@ -68,25 +71,36 @@ var x = <?php echo json_encode($a);  ?>
 
 for (var i = 0 ; i < x.length; i++) {
 	
-	if (x[i].substr(x[i].lastIndexOf('.') + 1) == "tif"){
-		var option = document.createElement("option");
-		option.text = x[i];
-		document.getElementById('filelist').appendChild(option)
+	if (x[i].substr(x[i].lastIndexOf('.') + 1) == "tiff"){
+		if (x[i].indexOf(pol) > 0 && x[i].indexOf(clm) > 0) {
+			var option = document.createElement("option");
+			option.text = x[i];
+			document.getElementById('filelist').appendChild(option)
+			var xsplit = x[i].split(" ");
+			var xsplitPrev = x[i-1].split(" ");
+			if (i > 0 && (xsplit[0] != xsplitPrev[0] || xsplit[1] != xsplitPrev[1] || xsplit[2] != xsplitPrev[2])) {
+				var option = document.createElement("option");
+				option.text = "";
+				document.getElementById('filelist').appendChild(option)	
+			}
+		}
 	}
 }  //end of for 
 
-var tiff;
+
+
+
 
 document.getElementById("filelist").addEventListener("change", function() {
 	var e = document.getElementById("filelist")
 	$("#bundleimage").empty();
 	document.getElementById('imageCanvas').getElementsByTagName("canvas")[0].remove();
 	tiff = ""
-	LoadImage("http://localhost/tiffviewer/" + e.options[e.selectedIndex].text)
+	LoadImage("http://localhost/Tiffs/" + e.options[e.selectedIndex].text)
 	
 });
 
-LoadImage("http://localhost/tiffviewer/image.tif")
+//LoadImage("http://localhost/tiffviewer/image.tiff")
 
 
 function LoadImage(image) {
@@ -105,9 +119,11 @@ function LoadImage(image) {
 		var canvas = tiff.toCanvas();
 		canvas.setAttribute('style', 'width:' + 960 + 'px; height: ' + 540 + 'px; border: ' + 1 + 'px solid blue;');
 		setSize(tiff)
+		
   
 		 $('#imageCanvas').append(canvas)
 		 console.log(canvas)
+		 $("#FitSize").click();
 
 		 document.getElementById("Total").value = tiff.countDirectory()
 		 document.getElementById("currentpage").value = 1
@@ -159,6 +175,7 @@ xhr.send();
 				canvas = tiff.toCanvas();
 				document.getElementById('imageCanvas').getElementsByTagName("canvas")[0].remove();
 				$('#imageCanvas').append(canvas)
+				$("#FitSize").click();
 			}
 		});
 
@@ -173,6 +190,7 @@ xhr.send();
 				canvas = tiff.toCanvas();
 				document.getElementById('imageCanvas').getElementsByTagName("canvas")[0].remove();
 				$('#imageCanvas').append(canvas)
+				$("#FitSize").click();
 			}
 		});
 		  
@@ -184,6 +202,7 @@ xhr.send();
 				canvas = tiff.toCanvas();
 				document.getElementById('imageCanvas').getElementsByTagName("canvas")[0].remove();
 				$('#imageCanvas').append(canvas)
+				$("#FitSize").click();
 			
 		});
 		  
@@ -198,6 +217,7 @@ xhr.send();
 			canvas = tiff.toCanvas();
 			document.getElementById('imageCanvas').getElementsByTagName("canvas")[0].remove();
 			$('#imageCanvas').append(canvas)
+			$("#FitSize").click();
 			
 		});
 		
@@ -222,18 +242,6 @@ function scroll() {
 	
 }  //end of scroll
 
-document.getElementById("OCR").addEventListener("click", function() {
-	
-	console.log(OCRArray);
-	
-		for (var i =0; i < OCRArray.length; i++) {
-			for (var o =0; o < OCRArray[i].lines.length; o++) {
-				console.log(OCRArray[i].lines[o].text)
-			}
-		}
-
-	
-})
 
 
 document.getElementById("OriginalSize").addEventListener("click", function() {
@@ -251,7 +259,7 @@ document.getElementById("FitSize").addEventListener("click", function() {
 	pWidth = document.getElementById('imageCanvas').getElementsByTagName("canvas")[0].width
 	pHeight = document.getElementById('imageCanvas').getElementsByTagName("canvas")[0].height
 	
-	ratio = 1300/pWidth
+	ratio = 1200/pWidth
 	
 	object.style = "width:1200px;height:" + (pHeight * ratio) + "px;";
 
@@ -269,30 +277,7 @@ function sleep(milliseconds) {
   }
 }
 
-function OCRbegin(iteration, theimage) {
-	
-			window.Tesseract = Tesseract.create({
-                // Path to worker
-            workerPath: 'http://localhost/tesseract/worker.js',
-                // Path of folder where the language trained data is located
-                // note the "/" at the end, this string will be concatenated with the selected language
-            langPath: 'http://localhost/tesseract/eng.traineddata/',
-                // Path to index script of the tesseract core ! https://github.com/naptha/tesseract.js-core
-             corePath: 'http://localhost/tesseract/index.js',
-        });
-		
-					
-		Tesseract.recognize(theimage).then(function(result){
-                    // The result object of a text recognition contains detailed data about all the text
-                    // recognized in the image, words are grouped by arrays etc
-					console.log(iteration)
-                     console.log(result);
-					 OCRArray[iteration] = result;
-					
 
-		});
-	
-}
 
 var md = false
 document.getElementById("imageCanvas").addEventListener("mousedown", function() {
