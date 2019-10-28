@@ -1,6 +1,6 @@
 <html>
 <head>
-
+<script src="jquery-3.2.1.js"></script>
 <script src="tiff.js"></script>
 
 
@@ -51,6 +51,7 @@ Current Page :
 <script>
 
 var tiff;
+var dir = "tiffviewer/"
 
 <?php
 $dir = "C:/Users/cyxstudio/Downloads/laragon/www/tiffviewer";
@@ -61,7 +62,7 @@ var x = <?php echo json_encode($a);  ?>
 
 for (var i = 0 ; i < x.length; i++) {
 	
-	if (x[i].substr(x[i].lastIndexOf('.') + 1) == "tiff"){
+	if (x[i].substr(x[i].lastIndexOf('.') + 1) == "tiff" || x[i].substr(x[i].lastIndexOf('.') + 1) == "tif"){
 		var option = document.createElement("option");
 		option.text = x[i];
 		document.getElementById('filelist').appendChild(option)
@@ -75,10 +76,11 @@ for (var i = 0 ; i < x.length; i++) {
 
 document.getElementById("filelist").addEventListener("change", function() {
 	var e = document.getElementById("filelist")
-	$("#bundleimage").empty();
-	document.getElementById('imageCanvas').getElementsByTagName("canvas")[0].remove();
+	if (document.getElementById('imageCanvas').getElementsByTagName("canvas").length > 0) {
+		document.getElementById('imageCanvas').getElementsByTagName("canvas")[0].remove();
+	}
 	tiff = ""
-	LoadImage("http://localhost/Tiffs/" + e.options[e.selectedIndex].text)
+	LoadImage("http://localhost/" + dir + e.options[e.selectedIndex].text)
 	
 });
 
@@ -102,7 +104,6 @@ function LoadImage(image) {
 		canvas.setAttribute('style', 'width:' + 960 + 'px; height: ' + 540 + 'px; border: ' + 1 + 'px solid blue;');
 		setSize(tiff)
 		
-  
 		 $('#imageCanvas').append(canvas)
 		 console.log(canvas)
 		 $("#FitSize").click();
