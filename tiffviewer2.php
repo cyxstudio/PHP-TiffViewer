@@ -9,7 +9,7 @@
 
 <div style="display:inline-block;">
 <select id="filelist" size=8></select>
-<select id="filelist2" size=8></select>
+
 </div>
 <div style="display:inline-block">
 <div style="display:block;">
