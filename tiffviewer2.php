@@ -13,8 +13,6 @@
 </div>
 <div style="display:inline-block">
 <div style="display:block;">
-policy<input type="text" id="policy" />
-CLM<input type="text" id="clm" />
 </div>
 <div style="display:block;">
 Total pages:
@@ -52,15 +50,7 @@ Current Page :
 </body>
 <script>
 
-var OCRArray = [];
 var tiff;
-
-var wname = window.name
-var pol = wname.split("|")[0]
-var clm = wname.split("|")[1]
-
-$("#policy").val(pol);
-$("#clm").val(clm);
 
 <?php
 $dir = "C:\Users\hssoyr9\Downloads\laragon-2.2\www\Tiffs";
@@ -72,18 +62,10 @@ var x = <?php echo json_encode($a);  ?>
 for (var i = 0 ; i < x.length; i++) {
 	
 	if (x[i].substr(x[i].lastIndexOf('.') + 1) == "tiff"){
-		if (x[i].indexOf(pol) > 0 && x[i].indexOf(clm) > 0) {
-			var option = document.createElement("option");
-			option.text = x[i];
-			document.getElementById('filelist').appendChild(option)
-			var xsplit = x[i].split(" ");
-			var xsplitPrev = x[i-1].split(" ");
-			if (i > 0 && (xsplit[0] != xsplitPrev[0] || xsplit[1] != xsplitPrev[1] || xsplit[2] != xsplitPrev[2])) {
-				var option = document.createElement("option");
-				option.text = "";
-				document.getElementById('filelist').appendChild(option)	
-			}
-		}
+		var option = document.createElement("option");
+		option.text = x[i];
+		document.getElementById('filelist').appendChild(option)
+
 	}
 }  //end of for 
 
