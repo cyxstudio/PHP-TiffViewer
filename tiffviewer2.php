@@ -53,7 +53,7 @@ Current Page :
 var tiff;
 
 <?php
-$dir = "C:\Users\hssoyr9\Downloads\laragon-2.2\www\Tiffs";
+$dir = "C:/Users/cyxstudio/Downloads/laragon/www/tiffviewer";
 $a = scandir($dir);
 ?>
 
